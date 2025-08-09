@@ -1,89 +1,76 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <vector>
 using namespace std;
 
-#define MAX 1000001
-int n, m, k; // 개수, 업데이트 횟수, 구간합 연산 횟수
-long long num[MAX];
-long long index_tree[MAX * 2]; // [1] : root
-int cnt;
+long long arr[1000001];
+vector<long long> idxtree;
+int leaf;
 
-void make_tree();
-void update_tree(int, long long);
-long long sub_sum(int, int);
+void update(int idx, long long val) {
+    idx += leaf;
+    idxtree[idx] = val;
+
+    while (idx > 1) {
+        idx /= 2;
+        idxtree[idx] = idxtree[idx * 2] + idxtree[idx * 2 + 1];
+    }
+}
+
+long long query(int start, int end) {
+    long long sum = 0;
+
+    start += leaf;
+    end += leaf;
+    while (start <= end) {
+        if (start % 2 == 1) {
+            // right child
+            sum += idxtree[start];
+        }
+        if (end % 2 == 0) {
+            // left child
+            sum += idxtree[end];
+        }
+
+        // parent로 이동
+        start = (start + 1) / 2;
+        end = (end - 1) / 2;
+    }
+
+    return sum;
+}
 
 int main() {
-	scanf("%d %d %d", &n, &m, &k);
+    int n, m, k;
+    scanf("%d %d %d", &n, &m, &k);
 
-	make_tree();
+    // tree 초기화
+    leaf = 1;
+    while (leaf < n) {
+        leaf *= 2;
+    }
+    idxtree.resize(leaf * 2, 0);
 
-	for (int i = 0; i < m + k; i++) {
-		long long a, b, c;
-		scanf("%lld %lld %lld", &a, &b, &c);
-		
-		if (a == 1) update_tree(b, c);
-		if (a == 2) printf("%lld\n", sub_sum(b, c));
-		
-	}
+    for (int i = 0; i < n; i++) {
+        scanf("%lld", &arr[i]);
+        idxtree[leaf + i] = arr[i];
+    }
 
-	return 0;
-}
+    for (int i = leaf - 1; i >= 1; i--) {
+        idxtree[i] = idxtree[i * 2] + idxtree[i * 2 + 1];
+    }
 
-void make_tree() {
-	cnt = 1;
-	while (cnt < n) {
-		cnt *= 2;
-	}
-	// cnt = 2^depth
-	fill(index_tree, index_tree + MAX * 2, 0); // 초기값 설정, 빈 리프노드 채우기
+    // 업데이트, 구간합
+    for (int i = 0; i < m + k; i++) {
+        long long a, b, c;
+        scanf("%lld %lld %lld", &a, &b, &c);
 
-	for (int i = 0; i < n; i++) {
-		int idx = cnt + i;
-		scanf("%lld", &num[i]);
-		// leaf node
-		index_tree[idx] = num[i];
+        if (a == 1) {
+            update(b - 1, c);
+        } else if (a == 2) {
+            printf("%lld\n", query(b - 1, c - 1));
+        }
+    }
 
-		// parent node
-		while (idx > 1) {
-			idx /= 2;
-			index_tree[idx] = index_tree[idx * 2] + index_tree[idx * 2 + 1];
-		}
-	}
-
-}
-
-void update_tree(int pos, long long num) {
-	pos--; // 0 base idx
-	int idx = cnt + pos;
-
-	index_tree[idx] = num;
-	while (idx > 1) {
-		idx /= 2;
-		index_tree[idx] = index_tree[idx * 2] + index_tree[idx * 2 + 1];
-	}
-}
-
-long long sub_sum(int start, int end) {
-	start--;
-	end--;
-	start = cnt + start;
-	end = cnt + end ;
-
-	long long sum = 0;
-
-	while (start <= end) {
-		if (start % 2 == 1) {
-			// right child
-			sum += index_tree[start];
-		}
-		if (end % 2 == 0) {
-			// left child
-			sum += index_tree[end];
-		}
-		
-		start = (start + 1) / 2;
-		end = (end - 1) / 2;
-	}
-
-	return sum;
+    return 0;
 }
