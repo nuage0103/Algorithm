@@ -13,10 +13,10 @@ void post(int start, int end) {
 	for (; i < end; i++) {
 		if (root < pre[i]) break;
 	}
+	// post: left - right - root
 	post(start + 1, i); // left
 	post(i, end); // right
-
-	cout << root << '\n';
+	cout << root << '\n'; // root
 }
 
 int main() {
