@@ -44,7 +44,14 @@ int main() {
 	}
 
 	// 무게 오름차순 정렬
-	sort(jew.begin(), jew.end());
+	// sort(jew.begin(), jew.end()); 무게(first)가 동일하면 가격(second)기준 오름차순
+	sort(jew.begin(), jew.end(), [](const pair<int, int>& a, const pair<int, int>& b) {
+		if (a.first == b.first) {
+			return a.second > b.second;
+		}
+		return a.first < b.first;
+		}); // 무게(first)가 동일하면 가격(second)기준 내림차순
+
 	sort(c.begin(), c.end());
 
 	long long sum = 0;
@@ -54,6 +61,6 @@ int main() {
 	}
 	
 	cout << sum << '\n';
-
+	
 	return 0;
 }
