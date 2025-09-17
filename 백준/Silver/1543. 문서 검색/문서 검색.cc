@@ -12,33 +12,18 @@ int main() {
 	getline(cin, s);
 	getline(cin, target);
 
-	vector<int> pos; // target 시작 위치
-	int p = -1;
-	while (1) {
-		p = s.find(target, p + 1);
-		if (p == string::npos) break;
-		pos.push_back(p);
-	}
-
-	int s_len = s.length();
+	int pos = 0;
+	int cnt = 0;
 	int t_len = target.length();
-	int p_size = pos.size();
-	int max_cnt = 0;
-	for (int start = 0; start < p_size; start++) {
-		int cnt = 1;
-		int cur = start;
-		for (int next = cur + 1; next < p_size; next++) {
-			if (pos[cur] + t_len > pos[next]) continue;
-			else {
-				cnt++;
-				cur = next;
-			}
-		}
-		
-		max_cnt = max(max_cnt, cnt);
+	while (1) {
+		pos = s.find(target, pos);
+		if (pos == string::npos) break;
+
+		cnt++;
+		pos += t_len;
 	}
 	
-	cout << max_cnt << '\n';
+	cout << cnt << '\n';
 
 	return 0;
 }
