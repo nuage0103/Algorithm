@@ -34,39 +34,20 @@ void init_reverse(){
             }
         }
     }
-    /*
-0: 0 4 3 3 4 3 2 3 1 2
-1: 4 0 5 3 2 5 6 1 5 4
-2: 3 5 0 2 5 4 3 4 2 3
-3: 3 3 2 0 3 2 3 2 2 1
-4: 4 2 5 3 0 3 4 3 3 2
-5: 3 5 4 2 3 0 1 4 2 1
-6: 2 6 3 3 4 1 0 5 1 2
-7: 3 1 4 2 3 4 5 0 4 3
-8: 1 5 2 2 3 2 1 4 0 1
-9: 2 4 3 1 2 1 2 3 1 0
-    */
 }
 
-void dfs(int depth, int rev_cnt){
+void dfs(int depth, int rev_cnt, int sum){
     if(depth == k){
-        if(rev_cnt != 0){
-            int sum = 0;
-            for(int i = 0; i < depth; i++){
-                sum = sum * 10 + (x_str[i] - '0');
-            }
-            if(sum >= 1 && sum <= n) res++;
-        }
+        if(rev_cnt != 0 && sum >= 1 && sum <= n) res++;
         return;
     }
 
     // rev[i][j]
     int i = x_str[depth] - '0';
     for(int j = 0; j < 10; j++){
-        if(rev_cnt + rev[i][j] <= p) {
-            x_str[depth] = j + '0';
-            dfs(depth + 1, rev_cnt + rev[i][j]);
-            x_str[depth] = i + '0';
+        int cnt = rev_cnt + rev[i][j];
+        if(cnt <= p) {
+            dfs(depth + 1, cnt, sum * 10 + j);
         }
     }
 }
@@ -89,10 +70,10 @@ int main(){
         x_str = c + x_str;
         tmp /= 10;
     }
-    while(x_str.length() < k) x_str = "0" + x_str;
+    x_str.insert(x_str.begin(), k - x_str.length(), '0');
 
     res = 0;
-    dfs(0, 0);
+    dfs(0, 0, 0);
     cout << res << '\n';
 
     return 0;
