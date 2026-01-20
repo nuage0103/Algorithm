@@ -22,18 +22,20 @@ int main(){
     int n, m;
     cin >> n >> m;
     graph.resize(n, vector<int>(m));
-    visited.resize(n, vector<vector<int>>(m, vector<int>(4, 0)));
+    visited.resize(4, vector<vector<int>>(n, vector<int>(m, 0)));
     res.resize(n, vector<int>(m, 0));
+    int cnt = 0;
     for(int i=0; i<n; i++){
         for(int j=0; j<m; j++){
             cin >> graph[i][j];
             if(graph[i][j] == 9) {
-                visited[i][j] = {1, 1, 1, 1};
+                visited[0][i][j] = visited[1][i][j] = visited[2][i][j] = visited[3][i][j] = 1;
                 q.push({i, j, 0});
                 q.push({i, j, 1});
                 q.push({i, j, 2});
                 q.push({i, j, 3});
                 res[i][j] = 1;
+                cnt++;
             }
         }
     }
@@ -64,19 +66,16 @@ int main(){
         int nx = x + dx[nd];
         int ny = y + dy[nd];
         if(nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-        if(visited[nx][ny][nd]) continue;
+        if(visited[nd][nx][ny]) continue;
 
-        visited[nx][ny][nd] = 1;
+        visited[nd][nx][ny] = 1;
         q.push({nx, ny, nd});
-        res[nx][ny] = 1;
-    }
-
-    int cnt = 0;
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            if(res[i][j] == 1) cnt++;
+        if(!res[nx][ny]){
+            res[nx][ny] = 1;
+            cnt++;
         }
     }
+
     cout << cnt << '\n';
 
     return 0;
