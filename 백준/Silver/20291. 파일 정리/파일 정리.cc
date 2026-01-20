@@ -15,8 +15,7 @@ int main(){
 
         int p = file.find('.');
         string ex = file.substr(p+1);
-        if(ex_freq.find(ex) == ex_freq.end()) ex_freq[ex] = 1;
-        else ex_freq[ex]++;
+        ex_freq[ex]++;
     }
 
     for(auto [ex, freq]: ex_freq) cout << ex << ' ' << freq << '\n';
