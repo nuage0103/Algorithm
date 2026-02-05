@@ -1,50 +1,45 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-int n;
-vector<vector<int>> graph;
-int dx[3] = {0, 1, 1};
-int dy[3] = {1, 0, 1}; // 0가로, 1세로, 2대각
-int res;
-
-void dfs(int x, int y, int dir){
-    if(x == n-1 && y == n-1){
-        res++;
-        return;
-    }
-
-    for(int i=0; i<3; i++){
-        if(dir == 0 && i == 1) continue;
-        if(dir == 1 && i == 0) continue;
-
-        int nx = x + dx[i];
-        int ny = y + dy[i];
-        if(nx >= n || ny >= n) continue;
-        if(graph[nx][ny]) continue;
-        if(i == 2){
-            if(graph[x][ny] || graph[nx][y]) continue;
-        }
-
-        dfs(nx, ny, i);
-    }
-}
-
 int main(){
     ios::sync_with_stdio(0);
     cin.tie(0);
     cout.tie(0);
 
+    int n;
     cin >> n;
-    graph.resize(n, vector<int>(n));
+    vector<vector<int>> graph(n, vector<int>(n));
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             cin >> graph[i][j];
         }
     }
 
-    res = 0;
-    dfs(0, 1, 0);
-    cout << res << '\n';
+    vector<vector<vector<int>>> dp;
+    dp.resize(3, vector<vector<int>>(n, vector<int>(n, 0)));
+    //[dir][x][y] x,y는 끝점
+    dp[0][0][1] = 1;
+    for(int x=0; x<n; x++){
+        for(int y=0; y<n; y++){
+            if(graph[x][y]) continue;
+
+            //가로
+            if(y-1 >= 0 && !graph[x][y]){
+                dp[0][x][y] += dp[0][x][y-1] + dp[2][x][y-1];
+            }
+            //세로
+            if(x-1 >= 0 && !graph[x][y]){
+                dp[1][x][y] += dp[1][x-1][y] + dp[2][x-1][y];
+            }
+            //대각
+            if(x-1 >= 0 && y-1 >= 0 && !graph[x][y]){
+                if(graph[x][y-1] || graph[x-1][y]) continue;
+                dp[2][x][y] += dp[0][x-1][y-1] + dp[1][x-1][y-1] + dp[2][x-1][y-1];
+            }
+        }
+    }
+
+    cout << dp[0][n-1][n-1] + dp[1][n-1][n-1] + dp[2][n-1][n-1] << '\n';
 
     return 0;
 }
