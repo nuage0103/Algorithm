@@ -5,34 +5,35 @@ int n, m, h;
 vector<vector<int>> graph;
 bool check;
 
-int traverse(int y){
-    for(int x=1; x<=h; x++){
-        if(y < n && graph[x][y]) y = y+1;
-        else if(y > 1 && graph[x][y-1]) y = y-1;
+bool traverse(){
+    for(int b=1; b<=n; b++){
+        int res = b;
+        for(int a=1; a<=h; a++){
+            if(res < n && graph[a][res]) res = res+1;
+            else if(res > 1 && graph[a][res-1]) res = res-1;
+        }
+        if(res != b) return false;
     }
 
-    return y;
+    return true;
 }
 
-void dfs(int depth, int cnt){
+void dfs(int depth, int cnt, int start){
     if(check) return;
 
     if(depth == cnt){
-        for(int b=1; b<=n; b++){
-            if(traverse(b) != b) return;
-        }
-        check = true;
+        if(traverse()) check = true;
         return;
     }
 
-    for(int b=1; b<n; b++){
-        for(int a=1; a<=h; a++){
-            if(graph[a][b-1] || graph[a][b] || graph[a][b+1]) continue;
+    for(int idx = start; idx < (n-1)*h; idx++){
+        int a = idx/(n-1) +1;
+        int b = idx%(n-1) +1;
+        if(graph[a][b-1] || graph[a][b] || graph[a][b+1]) continue;
 
-            graph[a][b] = 1;
-            dfs(depth+1, cnt);
-            graph[a][b] = 0;
-        }
+        graph[a][b] = 1;
+        dfs(depth+1, cnt, idx+1);
+        graph[a][b] = 0;
     }
 }
 
@@ -51,7 +52,7 @@ int main(){
 
     check = false;
     for(int cnt=0; cnt<=3; cnt++){
-        dfs(0, cnt);
+        dfs(0, cnt, 0);
         if(check) {
             cout << cnt << '\n';
             return 0;
