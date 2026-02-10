@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void dfs(int depth, int cur, vector<int>& d_idx, vector<vector<int>>& dice, vector<vector<int>>& visited, vector<int>& sum){
+void dfs(int depth, int cur, vector<int>& d_idx, vector<vector<int>>& dice, vector<int>& sum){
     if(depth == d_idx.size()){
         sum.push_back(cur);
         return;
@@ -10,11 +10,7 @@ void dfs(int depth, int cur, vector<int>& d_idx, vector<vector<int>>& dice, vect
     
     int idx = d_idx[depth];
     for(int i=0; i<6; i++){
-        if(!visited[idx][i]){
-            visited[idx][i] = 1;
-            dfs(depth+1, cur+dice[idx][i], d_idx, dice, visited, sum);
-            visited[idx][i] = 0;
-        }
+        dfs(depth+1, cur+dice[idx][i], d_idx, dice, sum);
     }
 }
 
@@ -33,23 +29,22 @@ vector<int> solution(vector<vector<int>> dice) {
     vector<int> answer;
     answer.resize(k);
     int max_win = 0;
-    for(int b=0; b<=(1<<n)-(1<<k); b++){
+    for(int b=(1<<k)-1; b<(1<<n); b++){
         vector<int> a_dice; // 주사위 번호
         vector<int> b_dice;
         
         for(int i=0; i<n; i++){
             if(b & (1<<i)) a_dice.push_back(i);
             else b_dice.push_back(i);
+            if(a_dice.size() > k || b_dice.size() > k) break;
         }
-        if(a_dice.size() != k) continue;
+        if(a_dice.size() != k || b_dice.size() != k) continue;
         
-        vector<vector<int>> visited(n, vector<int>(6, 0));
         vector<int> a_sum;
         vector<int> b_sum;
-        dfs(0, 0, a_dice, dice, visited, a_sum);
-        dfs(0, 0, b_dice, dice, visited, b_sum);
+        dfs(0, 0, a_dice, dice, a_sum);
+        dfs(0, 0, b_dice, dice, b_sum);
         
-        sort(a_sum.begin(), a_sum.end());
         sort(b_sum.begin(), b_sum.end());
         
         int win = comp(a_sum, b_sum);
