@@ -27,15 +27,13 @@ int main(){
     }
     while(!q.empty()){
         int u = q.front();
-        int w = res[u];
         q.pop();
 
         for(int v: graph[u]){
-            if(res[v]) continue;
+            res[v] = max(res[v], res[u] + 1);
 
             indegree[v]--;
             if(!indegree[v]){
-                res[v] = w + 1;
                 q.push(v);
             }
         }
