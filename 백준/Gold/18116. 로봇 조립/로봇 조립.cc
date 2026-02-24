@@ -14,6 +14,8 @@ void Union(int a, int b){
     int root_a = Find(a);
     int root_b = Find(b);
 
+    if(root_a > root_b) swap(root_a, root_b);
+    // root_a < root_b;
     parent[root_b] = root_a;
     freq[root_a] += freq[root_b];
     freq[root_b] = 0;
@@ -36,7 +38,6 @@ int main(){
             cin >> a >> b;
 
             if(a > b) swap(a, b);
-            // a < b
             if(Find(a) != Find(b)) Union(a, b);
         }
         else{
