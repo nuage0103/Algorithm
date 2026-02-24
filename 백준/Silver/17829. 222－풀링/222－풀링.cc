@@ -3,13 +3,19 @@ using namespace std;
 
 vector<vector<int>> graph;
 
-int pool(int r, int c){
-    vector<int> p;
-    for(int i = r; i < r + 2; i++){
-        for(int j = c; j < c + 2; j++){
-            p.push_back(graph[i][j]);
-        }
+int pool(int n, int r, int c){
+    if(n == 1){
+        // 풀링 못함. 입력값 그대로 반환
+        return graph[r][c];
     }
+
+    vector<int> p(4);
+    n /= 2;
+    p[0] = pool(n, r, c);
+    p[1] = pool(n, r, c + n);
+    p[2] = pool(n, r + n, c);
+    p[3] = pool(n, r + n, c + n);
+
     sort(p.begin(), p.end());
     return p[2];
 }
@@ -28,16 +34,7 @@ int main(){
         }
     }
 
-    while(n){
-        for(int i = 0; i < n; i += 2){
-            for(int j = 0; j < n; j += 2){
-                graph[i/2][j/2] = pool(i, j);
-            }
-        }
-
-        n /= 2;
-    }
-    cout << graph[0][0] << '\n';
+    cout << pool(n, 0, 0) << '\n';
 
     return 0;
 }
