@@ -6,16 +6,16 @@ string res;
 void bfs(int a, int b){
     if(a == b) return;
 
-    queue<pair<int, string>> q;
-    vector<int> visited(10000);
-    q.push({a, ""});
-    visited[a] = 1;
+    queue<int> q;
+    vector<int> parent(10000, -1);
+    vector<char> op_parent(10000);
+    q.push(a);
+    parent[a] = a;
 
     char op[4] = {'D', 'S', 'L', 'R'};
 
     while(!q.empty()){
-        int cur = q.front().first;
-        string path = q.front().second;
+        int cur = q.front();
         q.pop();
 
         for(int i = 0; i < 4; i++){
@@ -25,16 +25,23 @@ void bfs(int a, int b){
             else if(i == 2) nx = (cur % 1000) * 10 + (cur / 1000);
             else nx = (cur % 10) * 1000 + (cur / 10);
 
+            if(parent[nx] != -1) continue;
+
+            parent[nx] = cur;
+            op_parent[nx] = op[i];
             if(nx == b) {
-                res = path + op[i];
+                int x = b;
+                while(x != a) {
+                    res.push_back(op_parent[x]);
+                    x = parent[x];
+                }
+                reverse(res.begin(), res.end());
                 return;
             }
-            if(visited[nx]) continue;
-
-            visited[nx] = 1;
-            q.push({nx, path + op[i]});
+            q.push(nx);
         }
     }
+
 }
 
 int main(){
