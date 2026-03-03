@@ -2,7 +2,10 @@
 using namespace std;
 
 int n, m;
-vector<vector<int>> graph;
+vector<string> graph;
+int dist[1000][1000][2] = {0};
+int dx[4] = {0, 1, 0, -1};
+int dy[4] = {1, 0, -1, 0};
 
 typedef struct{
     int x, y;
@@ -11,14 +14,8 @@ typedef struct{
 
 int bfs(){
     queue<Node> q;
-    vector<vector<vector<int>>> dist;
-    dist.resize(n, vector<vector<int>>(m, vector<int>(2, -1)));
-
     q.push({0, 0, 0});
     dist[0][0][0] = 1;
-
-    int dx[4] = {0, 1, 0, -1};
-    int dy[4] = {1, 0, -1, 0};
 
     while(!q.empty()){
         Node cur = q.front();
@@ -37,15 +34,15 @@ int bfs(){
 
             if(nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
 
-            if(graph[nx][ny]){
+            if(graph[nx][ny] == '1'){
                 if(c) continue;
-                if(dist[nx][ny][1] != -1) continue;
+                if(dist[nx][ny][1]) continue;
 
                 dist[nx][ny][1] = d + 1;
                 q.push({nx, ny, 1});
             }
             else{
-                if(dist[nx][ny][c] != -1) continue;
+                if(dist[nx][ny][c]) continue;
 
                 dist[nx][ny][c] = d + 1;
                 q.push({nx, ny, c});
@@ -64,11 +61,7 @@ int main(){
     cin >> n >> m;
     graph.resize(n);
     for(int i = 0; i < n; i++){
-        string s;
-        cin >> s;
-        for(int j = 0; j < m; j++){
-            graph[i].push_back(s[j] - '0');
-        }
+        cin >> graph[i];
     }
 
     cout << bfs() << '\n';
