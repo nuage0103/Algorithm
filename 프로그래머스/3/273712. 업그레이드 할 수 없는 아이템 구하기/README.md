@@ -1,6 +1,6 @@
 # [level 3] 업그레이드 할 수 없는 아이템 구하기 - 273712 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/273712?language=mysql) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/273712) 
 
 ### 성능 요약
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-합계: 100.0 / 100.0
+합계: true / 100.0
 
 ### 제출 일자
 
-2025년 10월 02일 12:20:03
+2026년 04월 06일 10:29:32
 
 ### 문제 설명
 
