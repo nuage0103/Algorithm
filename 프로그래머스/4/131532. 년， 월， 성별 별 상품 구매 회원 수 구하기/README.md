@@ -1,6 +1,6 @@
 # [level 4] 년, 월, 성별 별 상품 구매 회원 수 구하기 - 131532 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131532?language=mysql) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131532) 
 
 ### 성능 요약
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-Empty
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2025년 09월 30일 13:33:02
+2026년 04월 07일 11:19:29
 
 ### 문제 설명
 
