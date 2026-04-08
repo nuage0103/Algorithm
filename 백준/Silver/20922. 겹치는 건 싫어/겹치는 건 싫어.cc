@@ -1,5 +1,10 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
 using namespace std;
+
+int freq[100001];
 
 int main(){
     ios::sync_with_stdio(0);
@@ -8,25 +13,23 @@ int main(){
 
     int n, k;
     cin >> n >> k;
-    vector<int> inp(n);
-    for(int i=0; i<n; i++){
-        cin >> inp[i];
+    vector<int> a(n);
+    for(int i = 0; i < n; i++){
+        cin >> a[i];
     }
 
-    int res = 0;
-    vector<int> freq(100001, 0);
-    int end = 0;
-    for(int start = 0; start<n; start++){
-        while(end < n && freq[inp[end]] < k){
-            freq[inp[end]]++;
-            end++;
+    int st = 0, en = 0;
+    int res = -1;
+    while(st < n && st <= en){
+        while(en < n && freq[a[en]] < k) {
+            freq[a[en]]++;
+            en++;
         }
-        res = max(res, end - start);
 
-        if(end == n) break;
-        freq[inp[start]]--;
+        res = max(res, en - st);
+        freq[a[st]]--;
+        st++;
     }
-
     cout << res << '\n';
 
     return 0;
