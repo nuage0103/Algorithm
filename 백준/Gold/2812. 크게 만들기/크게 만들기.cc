@@ -1,31 +1,42 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
+#include <stack>
 
 using namespace std;
 
 int main(){
     ios::sync_with_stdio(0);
-    cout.tie(0);
     cin.tie(0);
+    cout.tie(0);
 
     int n, k;
-    cin >> n >> k;
-    string number;
-    cin >> number;
+    string num;
+    cin >> n >> k >> num;
 
-    string res = ""; // 스택의 top처럼 문자열의 마지막 원소만 비교, 제거
-    for(int i=0; i<n; i++){
-        while(!res.empty() && k > 0 && number[i] > res.back()){
+    //stack<char> st;
+    string res = "";
+    int erase = 0;
+    for(char c: num){
+        while(!res.empty() && res.back() < c && erase < k){
             res.pop_back();
-            k--;
+            erase++;
         }
 
-        res.push_back(number[i]);
+        res.push_back(c);
     }
-    while(k){
+    while(erase < k){
         res.pop_back();
-        k--;
+        erase++;
     }
-
+/*
+    string res = "";
+    while(!st.empty()){
+        res += st.top();
+        st.pop();
+    }
+    reverse(res.begin(), res.end());
+*/
     cout << res << '\n';
 
     return 0;
