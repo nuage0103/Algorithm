@@ -1,6 +1,6 @@
 # [level 3] 부서별 평균 연봉 조회하기 - 284529 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/284529?language=mysql) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/284529) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 09월 25일 12:00:11
+2026년 05월 02일 16:49:04
 
 ### 문제 설명
 
