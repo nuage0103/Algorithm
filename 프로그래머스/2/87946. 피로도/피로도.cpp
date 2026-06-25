@@ -1,36 +1,23 @@
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <iostream>
 
 using namespace std;
-/*
-현재 피로도 >= 최소 소모 피로도: 탐험 가능
-탐험 후: 현재 피로도 -= 소모 피로도
 
-dfs, backtracking
-*/
-
-int n;
-int res;
+int n, cnt;
 vector<int> visited;
 
-void dfs(int depth, int cur, vector<vector<int>>& dungeons, int cnt){
-    /*
-    if(depth == n){
-        res = max(res, cnt);
-        return;
-    }
-    */
-    res = max(res, cnt);
+void dfs(int depth, int cur, int n, vector<vector<int>>& dungeons){
+    cnt = max(cnt, depth);
+    
+    if(depth == dungeons.size()) return;
     
     for(int i = 0; i < n; i++){
         if(visited[i]) continue;
-        if(cur >= dungeons[i][0]){
-            visited[i] = 1;
-            dfs(depth + 1, cur - dungeons[i][1], dungeons, cnt + 1);
-            visited[i] = 0;
-        }
+        if(cur < dungeons[i][0]) continue;
+        
+        visited[i] = 1;
+        dfs(depth + 1, cur - dungeons[i][1], n, dungeons);
+        visited[i] = 0;
     }
 }
 
@@ -38,10 +25,10 @@ int solution(int k, vector<vector<int>> dungeons) {
     int answer = -1;
     
     n = dungeons.size();
+    cnt = 0;
     visited.resize(n);
-    res = -1;
-    dfs(0, k, dungeons, 0);
-    answer = res;
+    dfs(0, k, n, dungeons);
+    answer = cnt;
     
     return answer;
 }
