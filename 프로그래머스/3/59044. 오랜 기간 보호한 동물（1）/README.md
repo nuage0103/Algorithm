@@ -1,10 +1,10 @@
 # [level 3] 오랜 기간 보호한 동물(1) - 59044 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59044?language=mysql) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59044) 
 
 ### 성능 요약
 
-메모리: 0.0 MB, 시간: 0.00 ms
+메모리: undefined, 시간: 
 
 ### 구분
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-Empty
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2025년 10월 29일 16:38:47
+2026년 06월 26일 11:24:17
 
 ### 문제 설명
 
