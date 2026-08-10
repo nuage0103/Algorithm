@@ -1,68 +1,49 @@
 #include <string>
 #include <vector>
-#include <iostream>
+#include <unordered_map>
 #include <sstream>
-#include <map>
+#include <iostream>
+#include <algorithm>
 #include <cmath>
 
 using namespace std;
 
-/*
-1. key값 정렬이 필요한지
-o: map
-x: Q2
-
-2. key 타입이 pair / vector
-o: map
-x: unordered_map
-*/
-
 vector<int> solution(vector<int> fees, vector<string> records) {
-    vector<int> answer; // id 오름차순
-    
-    map<string, vector<int>> id_time; // {id, time vec}
-    
+    vector<int> answer;
+    // 시간, 번호, 입출
+    // {번호: {시간 벡터}}
+    unordered_map<string, vector<int>> um;
     for(auto& r: records){
         stringstream ss(r);
-        string h, m, id;
-        string r2;
-        getline(ss, h, ':');
-        getline(ss, r2, ':');
-        stringstream ss2(r2);
-        ss2 >> m >> id;
-                
-        int hr = stoi(h);
-        int min = stoi(m);
-        id_time[id].push_back(hr * 60 + min);
-    }
-    for(auto& [k, v]: id_time){
-        if(v.size() % 2) v.push_back(23 * 60 + 59);
+        string time, num, inout;
+        ss >> time >> num >> inout;
+        int hr = stoi(time.substr(0, 2));
+        int min = stoi(time.substr(3));
+        um[num].push_back(hr * 60 + min);
     }
     
-    // 기본 시간, 기본 요금, 단위 시간, 단위 요금
+    for(auto& [num, time]: um){
+        if(time.size() % 2 != 0) um[num].push_back(23 * 60 + 59);
+    }
+    
+    vector<pair<string, vector<int>>> v(um.begin(), um.end());
+    sort(v.begin(), v.end()); // num 기준 오름차순
+    
     int f0 = fees[0], f1 = fees[1], f2 = fees[2], f3 = fees[3];
-    for(auto& [k, v]: id_time){
-        // 누적 시간
-        int total = 0;
-        for(int i = 0; i < v.size() - 1; i += 2){
-            total += v[i + 1] - v[i];
+    for(auto& [num, time]: v){
+        // 시간 계산
+        double total = 0;
+        for(int i = 0; i < time.size() - 1; i += 2){
+            total += (time[i + 1] - time[i]);
         }
-
-        if(total <= f0) answer.push_back(f1);
+        
+        // 요금 계산
+        if(total <= f0){
+            answer.push_back(f1);
+        }
         else{
-            answer.push_back(f1 + ceil((total - f0) / (float)f2) * f3);
+            answer.push_back(f1 + f3 * ceil((total - f0) / f2));
         }
     }
-    
     return answer;
 }
-
-
-
-
-
-
-
-
-
-
