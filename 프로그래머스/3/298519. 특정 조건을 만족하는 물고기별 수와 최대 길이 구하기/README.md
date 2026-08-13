@@ -1,6 +1,6 @@
 # [level 3] 특정 조건을 만족하는 물고기별 수와 최대 길이 구하기 - 298519 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/298519?language=mysql) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/298519) 
 
 ### 성능 요약
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-합계: 75.0 / 100.0
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2025년 09월 25일 12:20:50
+2026년 08월 13일 12:34:32
 
 ### 문제 설명
 
