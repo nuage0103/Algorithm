@@ -1,50 +1,49 @@
 #include <string>
 #include <vector>
-#include <iostream>
 #include <unordered_set>
+#include <iostream>
 
 using namespace std;
-int b_size, u_size;
-vector<vector<int>> mapping; // mapping[i]: bid[i]에 해당하는 uid idx 목록
-unordered_set<int> res;
 
 bool check(string& b, string& u){
-    if(b.length() != u.length()) return false;
-    for(int i=0; i<b.length(); i++){
-        if(b[i] == '*') continue;
-        if(b[i] != u[i]) return false;
+    if(u.size() != b.size()) return false;
+    
+    for(int j = 0; j < b.size(); j++){
+        if(b[j] == '*') continue;
+        if(b[j] != u[j]) return false;
     }
     return true;
 }
 
-void dfs(int depth, int mask){
-    if(depth == b_size){
-        res.insert(mask);
+void dfs(int depth, vector<vector<int>>& ban_idx, unordered_set<int>& s, int mask){
+    if(depth == ban_idx.size()){
+        s.insert(mask);
         return;
     }
     
-    for(int i=0; i<mapping[depth].size(); i++){
-        int uid = mapping[depth][i];
-        if(!(mask&(1<<uid))){
-            dfs(depth+1, mask|(1<<uid));
-        }
+    for(int i = 0; i < ban_idx[depth].size(); i++){
+        int idx = ban_idx[depth][i];
+        // 제재아이디 중복 확인
+        if(mask & (1 << idx)) continue;
+        
+        dfs(depth + 1, ban_idx, s, mask | (1 << idx));
     }
 }
 
 int solution(vector<string> user_id, vector<string> banned_id) {
-    b_size = banned_id.size();
-    u_size = user_id.size();
-    mapping.resize(b_size);
+    int answer = 0;
     
-    for(int i=0; i<b_size; i++){
-        for(int j=0; j<u_size; j++){
-            if(check(banned_id[i], user_id[j])) mapping[i].push_back(j);
+    vector<vector<int>> ban_idx; // 각 불량에 해당하는 제재아이디 인덱스
+    ban_idx.resize(banned_id.size());
+    for(int i = 0; i < banned_id.size(); i++){
+        string b = banned_id[i];
+        for(int j = 0; j < user_id.size(); j++){
+            if(check(b, user_id[j])) ban_idx[i].push_back(j);
         }
     }
     
-    int answer = 0;
-    dfs(0, 0);
-    answer = res.size();
-
+    unordered_set<int> s;
+    dfs(0, ban_idx, s, 0);
+    answer = s.size();
     return answer;
 }
