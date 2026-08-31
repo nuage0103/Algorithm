@@ -1,37 +1,38 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <algorithm>
 
 using namespace std;
 
-int solution(string s) {    
-    int len = s.size();
-    int answer = len;
+int solution(string s) {
+    int answer = 0;
     
-    for(int w = 1; w <= len / 2; w++){
-        string ns = "";
+    int n = s.size();
+    answer = n;
+    for(int w = 1; w <= n / 2; w++){
+        string cur, prev;
+        string res = "";
+        int cnt = 0;
         
-        string cur = s.substr(0, w);
-        int cnt = 1;
-        for(int p = w; p < len; p += w){
-            string tmp = s.substr(p, w);
-            if(tmp == cur){
+        prev = s.substr(0, w);
+        cnt++;
+        for(int i = w; i < n; i += w){
+            cur = s.substr(i, w);
+            if(cur == prev){
                 cnt++;
             }
             else{
-                if(cnt > 1) ns += to_string(cnt);
-                ns += cur;
+                if(cnt == 1) res += prev;
+                else res += to_string(cnt) + prev;
                 
-                cur = tmp;
+                prev = cur;
                 cnt = 1;
             }
         }
+        if(cnt == 1) res += prev;
+        else res += to_string(cnt) + prev;
         
-        if(cnt > 1) ns += to_string(cnt);
-        ns += cur;
-            
-        answer = min(answer, (int)ns.size());
+        answer = min(answer, (int)res.size());
     }
     
     return answer;
