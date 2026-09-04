@@ -1,37 +1,45 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <vector>
+#include <iostream>
 
 using namespace std;
-int n;
-vector<int> graph; // graph[x]: left, right child
+
 int max_sheep;
 
-void dfs(vector<int>& info, int node_mask, int cur, int sheep, int wolf){
-    if(info[cur] == 0) sheep++;
-    else wolf++;
+void dfs(const vector<int>& info, const vector<vector<int>>& childs, int sh, int wo, int mask){
+    max_sheep = max(max_sheep, sh);
     
-    if(sheep <= wolf) return;
-    max_sheep = max(max_sheep, sheep);
+    for(int i = 0; i < info.size(); i++){
+        if(!(mask & (1 << i))) continue;
         
-    node_mask |= graph[cur];
-    for(int i=0; i<n; i++){
-        if(!(node_mask & (1<<i))) continue;
+        int next_sh = (!info[i])? sh + 1 : sh;
+        int next_wo = (info[i])? wo + 1 : wo;
+        if(next_sh <= next_wo) continue;
         
-        node_mask &= ~(1<<i);
-        dfs(info, node_mask, i, sheep, wolf);
-        node_mask |= (1<<i);
+        int next_mask = mask;
+        for(int nx: childs[i]) next_mask |= (1 << nx);
+        next_mask &= ~ (1 << i);
+        dfs(info, childs, next_sh, next_wo, next_mask);
     }
 }
 
 int solution(vector<int> info, vector<vector<int>> edges) {
-    n = info.size();
-    graph.resize(n, 0);
-    for(int i=0; i<edges.size(); i++){
-        graph[edges[i][0]] |= (1<<edges[i][1]);
+    int answer = 0;
+    
+    // 양<=늑대 잡힙
+    // 0 루트
+    // edges[i] = {pa, ch}
+    vector<vector<int>> childs(info.size());
+    for(auto& e: edges){
+        childs[e[0]].push_back(e[1]);
     }
     
-    max_sheep = -1; 
-    dfs(info, 0, 0, 0, 0);
+    max_sheep = 0;
+    // mask: 이동 가능한 노드
+    int mask = 0;
+    for(int x: childs[0]) mask |= (1 << x);
+    dfs(info, childs, 1, 0, mask);
+    answer = max_sheep;
     
-    int answer = max_sheep;     
     return answer;
 }
