@@ -1,74 +1,74 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <iostream>
 
 using namespace std;
 
-vector<int> r_info(11);
-int max_diff;
-vector<int> tmp(11);
+/*
+k점: a어피치, b라이언. a>=b 어피치+k, a<b 라이언+k (a>0, b>0)
+최종점수 A, B. A>=B 어피치 승, A<B 라이언 승
 
-void update_r(int n, vector<int>& info){
-    int a_sum = 0, tmp_sum = 0;
+*/
+
+int max_diff;
+vector<int> lion_res;
+
+void update(const vector<int>& peach, const vector<int>& lion){
+    int p_sum = 0, l_sum = 0;
     for(int i = 0; i <= 10; i++){
-        if(info[i] == 0 && tmp[i] == 0) continue;
+        if(!peach[i] && !lion[i]) continue;
         
-        if(info[i] >= tmp[i]) a_sum += (10 - i);
-        else tmp_sum += (10 - i);
+        if(peach[i] >= lion[i]) p_sum += (10 - i);
+        else l_sum += (10 - i);
     }
     
-    if(a_sum < tmp_sum){
-        int tmp_diff = tmp_sum - a_sum;
-        
-        if(max_diff < tmp_diff){
-            max_diff = tmp_diff;
-            r_info = tmp;
-        }
-        else if(max_diff == tmp_diff){
-            for(int i = 10; i >= 0; i--){
-                if(r_info[i] == tmp[i]) continue;
-                else {
-                    if(r_info[i] < tmp[i]){
-                        r_info = tmp;
-                    }
-                    break;
-                }
+    int diff = l_sum - p_sum;
+    if(diff <= 0) return;
+    
+    if(diff > max_diff){
+        max_diff = diff;
+        lion_res = lion;
+    }
+    else if(diff == max_diff){
+        for(int i = 10; i >= 0; i--){
+            if(lion[i] > lion_res[i]){
+                lion_res = lion;
+                return;
             }
+            if(lion_res[i] > lion[i]) return;
         }
     }
-    
 }
 
-void dfs(int n, vector<int>& info, int depth, int cnt){
-    if(cnt == n){
-        update_r(n, info);
+void dfs(const vector<int>& peach, vector<int>& lion, int depth, int cur, int n){
+    if(depth == 11){
+        if(cur < n) lion[10] += (n - cur);
+        update(peach, lion);
+        if(cur < n) lion[10] -= (n - cur);
         return;
     }
     
-    if(depth == 11){
-        if(cnt < n) tmp[10] += (n - cnt);
-        update_r(n, info);
-        if(cnt < n) tmp[10] -= (n - cnt);
-        return;
-    }
-
-    for(int i = 0; i <= n; i++){
-        if(cnt + i > n) continue;
-        tmp[depth] = i;
-        dfs(n, info, depth + 1, cnt + i);
-        tmp[depth] = 0;
+    // 점수x
+    lion[depth] = 0;
+    dfs(peach, lion, depth + 1, cur, n);
+    // 점수o
+    if(cur + peach[depth] + 1 <= n){
+        lion[depth] = peach[depth] + 1;
+        dfs(peach, lion, depth + 1, cur + peach[depth] + 1, n);
+        lion[depth] = 0;
     }
 }
 
 vector<int> solution(int n, vector<int> info) {
     vector<int> answer;
-    
+    // info[i] = (10-i)점 개수    
     max_diff = -1;
-    dfs(n, info, 0, 0);
+    lion_res.assign(11, 0);
+    vector<int> lion(11);
+    dfs(info, lion, 0, 0, n);
     
-    if(max_diff == -1) answer.push_back(-1);
-    else answer = r_info;
+    if(max_diff == -1) return {-1};
+    else answer = lion_res;
     
     return answer;
 }
