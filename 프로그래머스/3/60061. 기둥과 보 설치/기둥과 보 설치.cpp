@@ -1,34 +1,32 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
-vector<vector<int>> gi; // 기둥
-vector<vector<int>> bo; // 보
-
-bool check(int n, int x, int y, int a){
-    if(a == 0){
-        if(y == 0) return true;
-        if(y - 1 >= 0 && gi[x][y - 1]) return true;
-        if(x - 1 >= 0 && bo[x - 1][y]) return true;
-        if(bo[x][y]) return true;
-    }
-    if(a == 1){
-        if(y - 1 >= 0 && gi[x][y - 1]) return true;
-        if(x + 1 <= n && y - 1 >= 0 && gi[x + 1][y - 1]) return true;
-        if((x - 1 >= 0 && bo[x - 1][y]) && (x + 1 <= n && bo[x + 1][y])) return true;
-    }
+bool check_ver(int x, int y, vector<vector<int>>& ver, vector<vector<int>>& hor, int n){    
+    if(y == 0) return true;
+    if(y - 1 >= 0 && ver[x][y - 1]) return true;
+    if(hor[x][y]) return true;
+    if(x - 1 >= 0 && hor[x - 1][y]) return true;
     
     return false;
 }
 
-bool del_check(int n){
-    for(int i = 0; i <= n; i++){
-        for(int j = 0; j <= n; j++){
-            if(gi[i][j] && !check(n, i, j, 0)) return false;
-            if(bo[i][j] && !check(n, i, j, 1)) return false;
+bool check_hor(int x, int y, vector<vector<int>>& ver, vector<vector<int>>& hor, int n){    
+    if(y - 1 >= 0 && ver[x][y - 1]) return true;
+    if(x + 1 <= n && y - 1 >= 0 && ver[x + 1][y - 1]) return true;
+    if((x - 1 >= 0 && hor[x - 1][y]) && (x + 1 <= n && hor[x + 1][y])) return true;
+    
+    return false;
+}
+
+bool check_all(vector<vector<int>>& ver, vector<vector<int>>& hor, int n){
+    for(int i = 0; i < n + 1; i++){
+        for(int j = 0; j < n + 1; j++){
+            if(ver[i][j] && !check_ver(i, j, ver, hor, n)) return false;
+            if(hor[i][j] && !check_hor(i, j, ver, hor, n)) return false;
         }
     }
     
@@ -38,41 +36,46 @@ bool del_check(int n){
 vector<vector<int>> solution(int n, vector<vector<int>> build_frame) {
     vector<vector<int>> answer;
     
-    gi.resize(n + 2, vector<int>(n + 2, 0));
-    bo.resize(n + 2, vector<int>(n + 2, 0));
-    for(auto& f: build_frame){
-        int x = f[0], y = f[1], a = f[2], b = f[3];
-        if(a == 0){ // 기둥
-            if(b == 0){
-                // 삭제: 일단 삭제하고, 다른 구조물들의 조건 확인 후 복원 여부 결정
-                gi[x][y] = 0;
-                if(!del_check(n)) gi[x][y] = 1;
+    vector<vector<int>> ver(n + 1, vector<int>(n + 1, 0)); // 기둥
+    vector<vector<int>> hor(n + 1, vector<int>(n + 1, 0)); // 보
+    for(auto& bf: build_frame){
+        int x = bf[0];
+        int y = bf[1];
+        int type = bf[2]; // 0기둥, 1보
+        int op = bf[3]; // 0삭제, 1설치
+        if(type == 0){
+            // 기둥
+            if(op == 0){
+                ver[x][y] = 0;
+                if(!check_all(ver, hor, n)) ver[x][y] = 1;
             }
-            if(b == 1){
-                // 설치
-                if(check(n, x, y, a)) gi[x][y] = 1;
+            else{
+                if(check_ver(x, y, ver, hor, n)) ver[x][y] = 1;
+            }
+        }
+        else{
+            // 보. 바닥에 설치 요청 없음
+            if(op == 0){
+                hor[x][y] = 0;
+                if(!check_all(ver, hor, n)) hor[x][y] = 1;
+            }
+            else{
+                if(check_hor(x, y, ver, hor, n)) hor[x][y] = 1;
             }
         }
         
-        if(a == 1){ // 보
-            if(b == 0){
-                // 삭제
-                bo[x][y] = 0;
-                if(!del_check(n)) bo[x][y] = 1;
-            }
-            if(b == 1){
-                // 설치
-                if(check(n, x, y, a)) bo[x][y] = 1;
-            }
-        }
     }
     
-    for(int i = 0; i <= n; i++){
-        for(int j = 0; j <= n; j++){
-            // 동일 좌표: 기둥이 보보다 앞에
-            if(gi[i][j]) answer.push_back({i, j, 0});
-            if(bo[i][j]) answer.push_back({i, j, 1});
+    for(int i = 0; i < n + 1; i++){
+        for(int j = 0; j < n + 1; j++){
+            if(ver[i][j]) answer.push_back({i, j, 0});
+            if(hor[i][j]) answer.push_back({i, j, 1});
         }
     }
+    sort(answer.begin(), answer.end(), [](const auto& a, const auto& b){
+        if(a[0] != b[0]) return a[0] < b[0];
+        if(a[1] != b[1]) return a[1] < b[1];
+        return a[2] < b[2];
+    });
     return answer;
 }
