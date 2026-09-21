@@ -10,12 +10,11 @@ int max_res;
 string order = "012";
 
 int bfs(string& pipe, int n, int infection){
-    queue<int> q;
-    vector<vector<bool>> propagated(3, vector<bool>(n + 1, false)); // type, node
     vector<bool> infected(n + 1, false);
     infected[infection] = true;
     
     for(int i = 0; i < pipe.size(); i++){
+        queue<int> q;
         for(int i = 1; i < infected.size(); i++){
             if(infected[i]) q.push(i);
         }
@@ -23,12 +22,11 @@ int bfs(string& pipe, int n, int infection){
         int type = pipe[i] - '0';
         
         while(!q.empty()){
-            int x = q.front(); // 6
+            int x = q.front();
             q.pop();
             
-            propagated[type][x] = true; // [a][6]
-            for(int nx: adj[type][x]){ // 5                
-                if(propagated[type][nx]) continue;
+            for(int nx: adj[type][x]){               
+                if(infected[nx]) continue;
                 q.push(nx);
                 infected[nx] = true;
             }
