@@ -4,73 +4,53 @@
 
 using namespace std;
 
-// m개, 길이n 문자열
-
-bool check(int x, int y, vector<string>& board, vector<vector<int>>& erase){
-    int dx[3] = {0, 1, 1};
-    int dy[3] = {1, 0, 1};
-    
-    char c = board[x][y];
-    bool same = true;
-    for(int i = 0; i < 3; i++){
-        if(board[x + dx[i]][y + dy[i]] != c) {
-            same = false;
-            break;
-        }
-    }
-
-    if(same) {
-        for(int i = 0; i < 3; i++){
-            erase[x + dx[i]][y + dy[i]] = 1;
-        }
-        erase[x][y] = 1;
-    }
-    
-    return erase[x][y] == 1;
-}
-
-void move(int m, int n, vector<string>& board){
+void remove(int m, int n, vector<string>& board, const vector<vector<bool>>& rm){
     for(int j = 0; j < n; j++){
-        int p = m - 1; // 현재 맨밑 빈칸
+        int idx = m - 1;
         for(int i = m - 1; i >= 0; i--){
-            if(board[i][j] != '0'){
-                board[p][j] = board[i][j];
-                if(p != i) board[i][j] = '0';
-                p--;
+            if(!rm[i][j]){
+                board[idx][j] = board[i][j];
+                idx--;
             }
         }
         
+        while(idx >= 0){
+            board[idx][j] = '-';
+            idx--;
+        }
     }
 }
 
 int solution(int m, int n, vector<string> board) {
     int answer = 0;
+    
     while(1){
-        bool flag = false;
-        
-        // 지울 블록 표시
-        vector<vector<int>> erase(m, vector<int>(n));
+        // 탐색지점: 좌상(x,y)
+        vector<vector<bool>> rm(m, vector<bool>(n, false));
+        bool changed = false;
         for(int i = 0; i < m - 1; i++){
             for(int j = 0; j < n - 1; j++){
-                if(board[i][j] != '0'){
-                    if(check(i, j, board, erase)) flag = true;
+                char c = board[i][j];
+                if(c == '-') continue;
+                
+                if(c == board[i][j + 1] && c == board[i + 1][j] && c == board[i + 1][j + 1]){
+                    rm[i][j] = true;
+                    rm[i][j + 1] = true;
+                    rm[i + 1][j] = true;
+                    rm[i + 1][j + 1] = true;
+                    changed = true;
                 }
             }
         }
+        if(!changed) break;
         
-        if(!flag) break;
-        
-        // 판 모두 확인 후 지우기
         for(int i = 0; i < m; i++){
             for(int j = 0; j < n; j++){
-                if(erase[i][j]){
-                    board[i][j] = '0';
-                    answer++;
-                }
+                if(rm[i][j]) answer++;
             }
         }
-
-        move(m, n, board);
+        // 제거
+        remove(m, n, board, rm);
     }
     
     return answer;
