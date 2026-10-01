@@ -1,44 +1,42 @@
 #include <string>
 #include <vector>
+#include <iostream>
 
 using namespace std;
-typedef long long ll;
 
 int solution(vector<int> queue1, vector<int> queue2) {
     int answer = -2;
-    ll total1 = 0, total2 = 0;
-    vector<int> q;
     int n = queue1.size();
+    long long sum1 = 0, sum2 = 0;
+    vector<int> q;
     for(int i = 0; i < n; i++){
-        total1 += queue1[i];
+        sum1 += queue1[i];
         q.push_back(queue1[i]);
     }
     for(int i = 0; i < n; i++){
-        total2 += queue2[i];
+        sum2 += queue2[i];
         q.push_back(queue2[i]);
     }
+    if((sum1 + sum2) % 2) return -1;
     
-    if((total1 + total2) % 2 == 1) return -1;
-    if(total1 == total2) return 0;
-    
+    long long target = (sum1 + sum2) / 2;
     int st = 0, en = n - 1;
+    n *= 2;
     answer = 0;
-    n = q.size();
     while(answer < 3 * n){
-        if(total1 == total2) return answer;
+        if(sum1 == target) return answer;
         
-        if(total1 > total2){
-            total1 -= q[st];
-            total2 += q[st];
+        if(sum1 > target){
+            sum1 -= q[st];
             st = (st + 1) % n;
         }
         else{
             en = (en + 1) % n;
-            total1 += q[en];
-            total2 -= q[en];
+            sum1 += q[en];
         }
         answer++;
     }
     
-    return -1;
+    answer = -1;
+    return answer;
 }
