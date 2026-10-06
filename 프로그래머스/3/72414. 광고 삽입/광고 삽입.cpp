@@ -2,69 +2,69 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 
 using namespace std;
+typedef long long ll;
 
-int change_time(string s){
+int toSec(string s){
     stringstream ss(s);
+    int hr, min, sec;
     string token;
     
     getline(ss, token, ':');
-    int hr = stoi(token);
+    hr = stoi(token);
     getline(ss, token, ':');
-    int min = stoi(token);
+    min = stoi(token);
     getline(ss, token, ':');
-    int sec = stoi(token);
+    sec = stoi(token);
     
     return (hr * 3600 + min * 60 + sec);
 }
 
 string solution(string play_time, string adv_time, vector<string> logs) {
     string answer = "";
+    int pt = toSec(play_time);
+    int at = toSec(adv_time);
+    if(pt <= at) return "00:00:00";
     
-    if(play_time == adv_time) return "00:00:00";
-    
-    int ptime = change_time(play_time);
-    int atime = change_time(adv_time);
-    
-    vector<long long> ltime(360000, 0); // 누적합. ltime[i] = i초 인원수
-    // 99:59:59 = 359,999초
+    vector<ll> cnt(99 * 3600 + 59 * 60 + 60, 0);
     for(string& log: logs){
-        int st = change_time(log.substr(0, 8));
-        int en = change_time(log.substr(9));
-        ltime[st]++;
-        ltime[en]--;
+        int st = toSec(log.substr(0, 8));
+        int en = toSec(log.substr(9));
+        cnt[st]++;
+        cnt[en]--;
     }
-    for(int i = 1; i <= ptime; i++){
-        ltime[i] += ltime[i - 1];
+    for(int i = 0; i < pt; i++){
+        cnt[i + 1] += cnt[i];
     }
     
-    int res = 0;
-    long long max_sum = 0, sum = 0;
-    // 슬라이딩 윈도우. 크기 atime
-    for(int i = 0; i < atime; i++){
-        // 0 ~ atime - 1
-        sum += ltime[i];
+    ll max_sum = -1, sum = 0;
+    int ans = -1;
+    for(int i = 0; i < at; i++){
+        // 0 ~ at-1
+        sum += cnt[i];
     }
     max_sum = sum;
-    for(int i = atime; i <= ptime; i++){
-        // i - atime + 1 ~ i
-        sum += ltime[i];
-        sum -= ltime[i - atime];
+    ans = 0;
+    for(int i = at; i <= pt; i++){
+        // i-at+1 ~ i
+        sum -= cnt[i - at];
+        sum += cnt[i];
         if(max_sum < sum){
             max_sum = sum;
-            res = i - atime + 1; // 가장 빠른 시작 시각
+            ans = i - at + 1;
         }
     }
     
-    string x = (res / 3600 < 10)? "0" + to_string(res / 3600) : to_string(res / 3600);
-    answer += x + ":";
-    res %= 3600;
-    x = (res / 60 < 10)? "0" + to_string(res / 60) : to_string(res / 60);
-    answer += x + ":";
-    res %= 60;
-    x = (res < 10)? "0" + to_string(res) : to_string(res);
-    answer += x;
+    answer += (ans / 3600 < 10)? "0" + to_string(ans / 3600) : to_string(ans / 3600);
+    answer += ":";
+    
+    ans %= 3600;
+    answer += (ans / 60 < 10)? "0" + to_string(ans / 60) : to_string(ans / 60);
+    answer += ":";
+    
+    ans %= 60;
+    answer += (ans < 10)? "0" + to_string(ans) : to_string(ans);
+    
     return answer;
 }
