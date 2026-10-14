@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <queue>
 #include <algorithm>
 
 using namespace std;
@@ -8,31 +9,34 @@ using namespace std;
 int solution(int cacheSize, vector<string> cities) {
     int answer = 0;
     
-    if(!cacheSize) return cities.size() * 5;
+    // hit = 1
+    // miss = 5
+    if(cacheSize == 0) return (5 * cities.size());
     
-    // 소문자로 변환
-    for(string& s: cities){
-        for(char& c: s) c = tolower(c);
+    for(string& city: cities){
+        for(char& c: city) c = tolower(c);
     }
-    
-    vector<string> cache;
-    // 시간 측정
-    for(int i = 0; i < cities.size(); i++){
-        string& s = cities[i];
-        auto it = find(cache.begin(), cache.end(), s);
-        // hit
-        if(it != cache.end()){
+
+    deque<string> q;
+    for(auto& city: cities){
+        auto it = find(q.begin(), q.end(), city);
+        if(it != q.end()){
+            // hit 1
             answer += 1;
-            cache.erase(it);
-            cache.push_back(s);
+            q.erase(it);
+            q.push_back(city);
         }
-        // miss
         else{
+            // miss 5
             answer += 5;
-            if(cache.size() >= cacheSize){
-                cache.erase(cache.begin());
+            
+            if(q.size() < cacheSize){
+                q.push_back(city);
             }
-            cache.push_back(s);
+            else{
+                q.pop_front();
+                q.push_back(city);
+            }
         }
     }
     
