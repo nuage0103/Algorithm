@@ -5,73 +5,66 @@
 using namespace std;
 
 void rotate(vector<vector<int>>& key, int m){
-    vector<vector<int>> tmp(m, vector<int>(m));
-    
+    vector<vector<int>> ret(m, vector<int>(m));
     for(int i = 0; i < m; i++){
         for(int j = 0; j < m; j++){
-            // (i, j) -> (j, m - 1 - i)
-            tmp[j][m - 1 - i] = key[i][j];
+            ret[j][m - 1 - i] = key[i][j];
         }
     }
-    
-    key = tmp;
+    key = ret;
 }
 
-bool check(vector<vector<int>>& board, int st, int n){
-    for(int i = st; i < st + n; i++){
-        for(int j = st; j < st + n; j++){
-            if(board[i][j] != 1) return false;
+bool check(const vector<vector<int>>& board, int st, int n){
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            if(board[st + i][st + j] != 1) return false;
         }
     }
-    
     return true;
 }
 
 bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
-    bool answer = false;
+    bool answer = true;
     
+    int m = key.size();
     int n = lock.size();
-    int m = key.size(); // m <= n
-
-    // 0홈, 1돌기
-    // 열쇠 돌기, 자물쇠 홈 일치 + 열쇠 돌기, 자물쇠 돌기 안만남 = 합 1 (0, 2x)
-    // 열쇠 이동, 회전
     int len = n + 2 * (m - 1);
     int lock_st = m - 1;
-    
-    for(int r = 0; r < 4; r++){
-        // 회전
-        rotate(key, m);
+    vector<vector<int>> board;
+    // 열쇠돌기+자물쇠홈=1
+    for(int T = 0; T < 4; T++){
+        board.assign(len, vector<int>(len, 0));
         
-        // 전체 보드 초기화: 자물쇠 채우기. 위치 고정
-        vector<vector<int>> board(len, vector<int>(len, 0));
+        // board += lock
         for(int i = 0; i < n; i++){
             for(int j = 0; j < n; j++){
                 board[lock_st + i][lock_st + j] = lock[i][j];
             }
         }
         
-        // 열쇠 이동
-        for(int stx = 0; stx < m + n - 1; stx++){
-            for(int sty = 0; sty < m + n - 1; sty++){
-                // 보드 상 열쇠 시작 위치(stx, sty)
-                for(int x = 0; x < m; x++){
-                    for(int y = 0; y < m; y++){
-                        board[stx + x][sty + y] += key[x][y];
+        for(int st_x = 0; st_x < n + m - 1; st_x++){
+            for(int st_y = 0; st_y < n + m - 1; st_y++){
+                // board += key
+                for(int i = 0; i < m; i++){
+                    for(int j = 0; j < m; j++){
+                        board[st_x + i][st_y + j] += key[i][j];
                     }
                 }
-                
+                // check
                 if(check(board, lock_st, n)) return true;
                 
-                // 복원
-                for(int x = 0; x < m; x++){
-                    for(int y = 0; y < m; y++){
-                        board[stx + x][sty + y] -= key[x][y];
+                // board -= key
+                for(int i = 0; i < m; i++){
+                    for(int j = 0; j < m; j++){
+                        board[st_x + i][st_y + j] -= key[i][j];
                     }
                 }
             }
         }
+        
+        rotate(key, m);
     }
     
-    return answer;
+    //return answer;
+    return false;
 }
